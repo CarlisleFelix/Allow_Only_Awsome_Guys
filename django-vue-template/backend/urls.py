@@ -11,7 +11,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from .api.views import index_view, MessageViewSet
-from .api.views import search_images
+from .api.views import search_images, upload_images
 
 
 router = routers.DefaultRouter()
@@ -31,8 +31,10 @@ urlpatterns = [
     # search的接口
     path('api/search/', search_images),
 
+    path('api/upload/', upload_images),
 
 ]
+
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

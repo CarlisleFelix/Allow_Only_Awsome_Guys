@@ -1,13 +1,21 @@
 <template>
   <div>
-    <input type="text" v-model="keyword" placeholder="Enter search keyword" />
-    <input type="text" v-model="number" placeholder="Enter search number" />
-    <button @click="searchImages">Search</button>
-    <ul>
-      <li v-for="(image, index) in images" :key="index">
-        <img :src="'http://localhost:8000/media/'+image" />
-      </li>
+    <div>
+      <input multiple accept="image/*" @change="onFileChanged" id="imageInput" type="file"/>
+      <button @click="uploadImages">Submit</button>
+    </div>
+    <div>
+      <input type="text" v-model="keyword" placeholder="Enter search keyword" />
+      <input type="text" v-model="number" placeholder="Enter search number" />
+      <button @click="searchImages">Search</button>
+      <ul>
+        <li v-for="(image, index) in images" :key="index">
+          <img :src="'http://localhost:8000/media/'+image" />
+        </li>
     </ul>
+    </div>
+    
+
   </div>
 </template>
 
@@ -18,6 +26,7 @@ export default {
       keyword: "",
       number: "",
       images: [],
+      selectedImages: null,
     };
   },
   methods: {
@@ -36,8 +45,36 @@ export default {
         })
         .catch(error => {
           window.console.error('There was a problem with the fetch operation:', error);
+          window.console.error(error);
         });
     },
+
+    onFileChanged (event) {
+      this.selectedImages = event.target.files
+      window.console.log(this.selectedImages)
+
+    },
+
+    uploadImages() {
+      let formData = new FormData();
+      for(var i = 0; i < this.selectedImages.length; ++i){
+        window.console.log(this.selectedImages[i])
+        formData.append('file_list', this.selectedImages[i])
+      }
+      fetch('http://localhost:8000/api/upload/', {
+        method : 'POST',
+        body : formData
+      }).then(response => {
+        window.alert("upload success")
+        return response.json();
+      })
+      .catch(error => {
+        window.alert("upload fail")
+        window.console.error('There was a problem with the upload operation:', error);
+      });
+    },
+
+
   },
 };
 </script>
